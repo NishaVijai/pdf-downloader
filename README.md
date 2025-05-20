@@ -11,3 +11,6 @@
 - Open a project folder
 - From terminal, run, "npm install" or "npm i"
 - Solution will run on localhost
+
+### To run the server
+- From terminal, run, "node proxy.js"
