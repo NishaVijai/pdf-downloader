@@ -36,11 +36,6 @@ body {
   overflow-y: auto; */
 }
 
-.check-results {
-  height: 100%;
-  width: 100%;
-}
-
 h1 {
   font-size: 2.5rem;
   font-weight: 700;
@@ -97,10 +92,15 @@ header {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 1rem;
+  justify-content: flex-start;
+  /* justify-content: center; */
+  /* gap: 1rem; */
   height: 100%;
   width: 100%;
+}
+
+.csv-to-excel button {
+  width: 350px;
 }
 
 .csv-to-excel label {
@@ -109,7 +109,7 @@ header {
   align-items: center;
   justify-content: center;
   gap: 1rem;
-  height: 50%;
+  /* height: 50%; */
   width: 100%;
 }
 
@@ -120,6 +120,20 @@ header {
   justify-content: center;
   gap: 1rem;
   /* height: 50%; */
+}
+
+.check-results {
+  /* border: 2px solid green; */
+  width: 100%;
+  /* padding: 1rem; */
+}
+
+.checking-urls-status {
+  color: blue;
+}
+
+.error-message {
+  color: red;
 }
 
 footer {
@@ -136,8 +150,9 @@ footer {
 
 @media only screen and (orientation: landscape) {
 
-  .main-container {
-    /* max-width: 1024px; */
+  .main-container,
+  .check-results {
+    max-width: 1024px;
   }
 
   input {

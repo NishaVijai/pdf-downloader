@@ -2,7 +2,6 @@ import { useState, useRef } from "react";
 import Papa from "papaparse";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
-import { PreviewTableNewTab } from "./PreviewTableNewTab";
 import { isWorkingPdfUrl } from "../utils/isWorkingPdfUrl";
 
 export function CsvToExcel() {
@@ -142,19 +141,19 @@ export function CsvToExcel() {
         Upload CSV file:
         <input type="file" accept=".csv" onChange={handleFileChange} />
       </label>
-      {error && <div style={{ color: "red" }}>{error}</div>}
-      <div>
+      {error && <div className="error-message">{error}</div>}
+      <div className="check-results">
         {data.length !== 0 && (
           <>
-            <button onClick={handleDownloadExcel}>Download Excel</button>
-            <PreviewTableNewTab columns={columns} data={data} />
             <button onClick={checkSecondColumnUrls} disabled={checking}>
-              {checking ? "Checking URLs..." : "Check Example PDF (Second Column)"}
+              {checking ? "Checking PDF URLs..." : "Check PDF URL's working status (Second Column)"}
             </button>
+
             {checking && (
-              <div style={{ color: "blue" }}>Checking URLs, please wait...</div>
+              <div className="checking-urls-status">Checking PDF URLs, please wait...</div>
             )}
-            <div className="check-results">
+
+            <div>
               {checkTiming.start && (
                 <>
                   <div>Start: {checkTiming.start.toLocaleTimeString()}</div>
@@ -166,22 +165,9 @@ export function CsvToExcel() {
                   )}
                 </>
               )}
-              {checkResults.length > 0 && (
-                <div style={{ marginTop: 10 }}>
-                  <strong>Check Results:</strong>
-                  <ul>
-                    {checkResults.map((r, i) => (
-                      <li key={i}>
-                        <a href={r.url} target="_blank" rel="noopener noreferrer">{r.url}</a> -{" "}
-                        {r.working ? (
-                          <span style={{ color: "green" }}>Working</span>
-                        ) : (
-                          <span style={{ color: "red" }}>Not Working</span>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+
+              {checkTiming.end && (
+                <button onClick={handleDownloadExcel}>Download Excel with PDF file URL's status</button>
               )}
             </div>
           </>
