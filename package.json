@@ -7,13 +7,15 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest"
   },
   "dependencies": {
     "cors": "^2.8.5",
     "exceljs": "^4.4.0",
     "express": "^5.1.0",
     "file-saver": "^2.0.5",
+    "jszip": "^3.10.1",
     "node-fetch": "^3.3.2",
     "papaparse": "^5.5.3",
     "react": "^19.1.0",
