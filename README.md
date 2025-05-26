@@ -14,3 +14,6 @@
 
 ### To run the server
 - From terminal, run, "node proxy.js"
+
+### To run test (vitest)
+- From terminal, run, "npx vitest"
