@@ -5,15 +5,13 @@ export async function exportToExcel({ data, columns, checkResults, detectUrlColu
   const workbook = new ExcelJS.Workbook();
   const worksheet = workbook.addWorksheet("CSV Converted To Excel Sheet");
 
-  const hasCheckResults = checkResults.length > 0;
-  const outputColumns = hasCheckResults ? [...columns, "Status"] : columns;
-
+  const outputColumns = [...columns, "Working/Downloaded URL", "Not working/not downloaded URL"];
   worksheet.addRow(outputColumns);
 
   let statusMap = {};
-  if (hasCheckResults) {
+  if (checkResults && checkResults.length > 0) {
     checkResults.forEach(r => {
-      statusMap[r.url] = r.working ? "Working" : "Not Working";
+      statusMap[r.url] = r.working ? "Working/Downloaded" : "Not working/not downloaded";
     });
   }
 
@@ -21,16 +19,23 @@ export async function exportToExcel({ data, columns, checkResults, detectUrlColu
 
   data.forEach(row => {
     const rowData = columns.map(col => row[col]);
-    if (hasCheckResults && urlCols.length) {
-      let url = null;
-      for (const col of urlCols) {
-        if (typeof row[col] === "string" && row[col].startsWith("http")) {
-          url = row[col];
-          if (statusMap[url] === "Working") break;
+    let workingUrl = "";
+    let notWorkingUrl = "";
+
+    for (const col of urlCols) {
+      const url = row[col];
+      if (typeof url === "string" && url.startsWith("http")) {
+        if (statusMap[url] === "Working/Downloaded" && !workingUrl) {
+          workingUrl = url;
+        } else if (statusMap[url] === "Not working/not downloaded" && !notWorkingUrl) {
+          notWorkingUrl = url;
         }
+
+        if (workingUrl && notWorkingUrl) break;
       }
-      rowData.push(url ? statusMap[url] || "" : "");
     }
+
+    rowData.push(workingUrl, notWorkingUrl);
     worksheet.addRow(rowData);
   });
 

@@ -6,7 +6,6 @@ export function CheckStatusPanel({
   checkResults,
   checkTiming,
   onCheck,
-  onDownloadExcel,
   formatDuration,
   estimateTimeRemaining
 }) {
@@ -51,9 +50,6 @@ export function CheckStatusPanel({
               </span>
             )}
           </div>
-          {checkTiming.end && !checking && (
-            <button onClick={onDownloadExcel}>Download as a Excel File with PDF link status</button>
-          )}
         </>
       )}
     </div>

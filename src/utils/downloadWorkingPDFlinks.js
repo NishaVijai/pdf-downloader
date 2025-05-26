@@ -2,6 +2,8 @@ import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import { asyncPool } from "./csvUtils";
 
+const downloadedFilesSet = new Set();
+
 export async function downloadWorkingPDFlinks({
   data,
   columns,
@@ -29,14 +31,16 @@ export async function downloadWorkingPDFlinks({
         url.startsWith("http") &&
         checkResults.find(r => r.url === url && r.working)
       ) {
-        workingLinks.push({ url, id: idx + 1 });
+        if (!downloadedFilesSet.has(url)) {
+          workingLinks.push({ url, id: idx + 1 });
+        }
         break;
       }
     }
   });
 
   if (workingLinks.length === 0) {
-    setError("No working links found.");
+    setError("No new working links found to download.");
     setDownloadingZip(false);
     return;
   }
@@ -61,6 +65,8 @@ export async function downloadWorkingPDFlinks({
       base = base.replace(/\(\d+\)/, "").replace(/\.pdf$/i, "");
       const filename = `id-${id}-${base}.pdf`;
       zip.file(filename, blob);
+
+      downloadedFilesSet.add(url);
     } catch (err) {
       failedDownloads.push({ url, id });
     }
@@ -82,4 +88,8 @@ export async function downloadWorkingPDFlinks({
   setDownloadingZip(false);
   setZipDownloaded(true);
   setDownloadProgress({ completed: total, total, start: startTime });
+}
+
+export function resetDownloadedFilesSet() {
+  downloadedFilesSet.clear();
 }

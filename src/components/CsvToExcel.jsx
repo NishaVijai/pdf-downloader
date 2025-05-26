@@ -52,7 +52,7 @@ export function CsvToExcel() {
       checkResults,
       detectUrlColumns
     });
-  }
+  };
 
   const handleDownloadWorkingLinks = async () => {
     await downloadWorkingPDFlinks({
@@ -82,7 +82,6 @@ export function CsvToExcel() {
             checkResults={checkResults}
             checkTiming={checkTiming}
             onCheck={checkUrlLink}
-            onDownloadExcel={handleDownloadExcel}
             formatDuration={formatDuration}
             estimateTimeRemaining={estimateTimeRemaining}
           />
