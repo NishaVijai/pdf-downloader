@@ -1,6 +1,15 @@
+import React, { forwardRef, useRef, useImperativeHandle } from "react";
 import Papa from "papaparse";
 
-export function CsvUpload({ onData, onError }) {
+export const CsvUpload = forwardRef(({ onData, onError }, ref) => {
+  const inputRef = useRef();
+
+  useImperativeHandle(ref, () => ({
+    clear: () => {
+      if (inputRef.current) inputRef.current.value = "";
+    }
+  }));
+
   const sanitizeRow = (row) => {
     const clean = {};
     for (const key in row) {
@@ -42,7 +51,7 @@ export function CsvUpload({ onData, onError }) {
   return (
     <label>
       Upload CSV file:
-      <input type="file" accept=".csv" onChange={handleFileChange} />
+      <input ref={inputRef} type="file" accept=".csv" onChange={handleFileChange} />
     </label>
   );
-}
+});

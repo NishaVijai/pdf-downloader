@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { isWorkingPdfUrl } from "../utils/isWorkingPdfUrl";
 import {
   detectUrlColumns,
@@ -18,6 +18,7 @@ import { CheckStatusPanel } from "./CheckStatusPanel";
 import { DownloadPanel } from "./DownloadPanel";
 
 export function CsvToExcel() {
+  const [uploading, setUploading] = useState(false);
   const [data, setData] = useState([]);
   const [columns, setColumns] = useState([]);
   const [error, setError] = useState("");
@@ -28,7 +29,26 @@ export function CsvToExcel() {
   const [checkTiming, setCheckTiming] = useState({ start: null, end: null });
   const [downloadProgress, setDownloadProgress] = useState({ completed: 0, total: 0, start: null });
 
+  const csvUploadRef = useRef();
+
   const [status, checkUrl] = isWorkingPdfUrl();
+
+  const handleStartUploading = () => {
+    setUploading(true);
+    setData([]);
+    setColumns([]);
+    setError("");
+    setChecking(false);
+    setCheckResults([]);
+    setDownloadingZip(false);
+    setZipDownloaded(false);
+    setCheckTiming({ start: null, end: null });
+    setDownloadProgress({ completed: 0, total: 0, start: null });
+
+    if (csvUploadRef.current) {
+      csvUploadRef.current.clear();
+    }
+  };
 
   const checkUrlLink = async () => {
     await urlChecker({
@@ -69,35 +89,43 @@ export function CsvToExcel() {
 
   return (
     <div className="csv-to-excel">
-      <CsvUpload
-        onData={(rows, cols) => { setData(rows); setColumns(cols); }}
-        onError={setError}
-      />
-      {error && <div className="error-message">{error}</div>}
-      {data.length !== 0 && (
+      <button className="start-upload-btn" onClick={handleStartUploading}>
+        Start Uploading File
+      </button>
+      {uploading && (
         <>
-          <CheckStatusPanel
-            data={data}
-            checking={checking}
-            checkResults={checkResults}
-            checkTiming={checkTiming}
-            onCheck={checkUrlLink}
-            formatDuration={formatDuration}
-            estimateTimeRemaining={estimateTimeRemaining}
+          <CsvUpload
+            ref={csvUploadRef}
+            onData={(rows, cols) => { setData(rows); setColumns(cols); }}
+            onError={setError}
           />
-          <DownloadPanel
-            checkResults={checkResults}
-            downloadingZip={downloadingZip}
-            downloadProgress={downloadProgress}
-            zipDownloaded={zipDownloaded}
-            onDownloadZip={handleDownloadWorkingLinks}
-            onDownloadExcel={handleDownloadExcel}
-            estimateDownloadTime={estimateDownloadTime}
-            estimateZipTimeRemaining={estimateZipTimeRemaining}
-            data={data}
-            columns={columns}
-            detectUrlColumns={detectUrlColumns}
-          />
+          {error && <div className="error-message">{error}</div>}
+          {data.length !== 0 && (
+            <>
+              <CheckStatusPanel
+                data={data}
+                checking={checking}
+                checkResults={checkResults}
+                checkTiming={checkTiming}
+                onCheck={checkUrlLink}
+                formatDuration={formatDuration}
+                estimateTimeRemaining={estimateTimeRemaining}
+              />
+              <DownloadPanel
+                checkResults={checkResults}
+                downloadingZip={downloadingZip}
+                downloadProgress={downloadProgress}
+                zipDownloaded={zipDownloaded}
+                onDownloadZip={handleDownloadWorkingLinks}
+                onDownloadExcel={handleDownloadExcel}
+                estimateDownloadTime={estimateDownloadTime}
+                estimateZipTimeRemaining={estimateZipTimeRemaining}
+                data={data}
+                columns={columns}
+                detectUrlColumns={detectUrlColumns}
+              />
+            </>
+          )}
         </>
       )}
     </div>

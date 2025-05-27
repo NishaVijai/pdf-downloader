@@ -50,7 +50,7 @@ export function DownloadPanel({
   return (
     <>
       {checkResults.length > 0 && (
-        <>
+        <div className="download-panel">
           <button onClick={handleDownloadZipAndExcel} disabled={downloadingZip}>
             Download PDF files (ZIP)
             {showSpans && (
@@ -64,29 +64,28 @@ export function DownloadPanel({
               </>
             )}
           </button>
-          <button onClick={handleResetDownload} disabled={downloadingZip} style={{ marginLeft: 12 }}>
+          <button onClick={handleResetDownload} disabled={downloadingZip}>
             Reset Download
           </button>
           {showExcelButton && (
-            <button onClick={onDownloadExcel} disabled={downloadingZip} style={{ marginLeft: 12 }}>
+            <button onClick={onDownloadExcel} disabled={downloadingZip}>
               Download a Excel File with PDF link status
             </button>
           )}
-        </>
+        </div>
       )}
       {downloadingZip && (
         <div className="loading-message">
-          Preparing ZIP file, please wait...<br />
-          Downloaded: {downloadProgress.completed} / {downloadProgress.total}
-          <br />
-          Estimated time left: {estimateZipTimeRemaining(downloadProgress)}
+          <p>Preparing ZIP file, please wait...</p>
+          <p>Downloaded: {downloadProgress.completed} / {downloadProgress.total}</p>
+          <p>Estimated time left: {estimateZipTimeRemaining(downloadProgress)}</p>
         </div>
       )}
-      {zipDownloaded && !downloadingZip && (
-        <div className="success-message">
-          ZIP download completed!
-        </div>
-      )}
+      <div className="zip-download-status">
+        {zipDownloaded && !downloadingZip && (
+          <p className="success-message">ZIP download completed!</p>
+        )}
+      </div>
     </>
   );
 }

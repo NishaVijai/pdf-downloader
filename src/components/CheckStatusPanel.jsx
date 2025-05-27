@@ -17,15 +17,25 @@ export function CheckStatusPanel({
   };
 
   return (
-    <div>
-      <button onClick={handleCheckClick} disabled={checking || checkTiming.end}>
-        {checking ? "Checking PDF URLs..." : "Check PDF URL's working status"}
+    <div className="check-status-panel">
+      <button
+        className="check-status-button"
+        onClick={handleCheckClick}
+        disabled={checking || checkTiming.end}
+      >
+        {checking
+          ? "Checking PDF URLs..."
+          : checkTiming.end && showStatus
+            ? "Choose a file to check PDF URL's again"
+            : "Check working PDF URL's"}
       </button>
       {showStatus && (
         <>
-          {checkTiming.end && !checking && <div className="success-message">Checking Completed</div>}
-          {checking && <div className="checking-urls-status">Checking PDF URLs, please wait...</div>}
-          <div>
+          <div className="check-status-panel-message">
+            {checkTiming.end && !checking && <p className="success-message">Checking Completed</p>}
+            {checking && <div className="checking-urls-status">Checking PDF URLs, please wait...</div>}
+          </div>
+          <div className="check-status-panel-process-message">
             <strong>Total rows:</strong> {data.length}
             <br />
             <strong>URL link's being checked:</strong> {checking ? Math.min(checkResults.length, data.length) : checkResults.length}
@@ -34,20 +44,25 @@ export function CheckStatusPanel({
             <br />
             {checkTiming.start && (
               <>
-                <div>Start: {checkTiming.start.toLocaleTimeString()}</div>
-                {checkTiming.end && <div>End: {checkTiming.end.toLocaleTimeString()}</div>}
+                <strong>Start: </strong> {checkTiming.start.toLocaleTimeString()}
+                {checkTiming.end && (
+                  <>
+                    <strong>End: </strong>{checkTiming.end.toLocaleTimeString()}
+                  </>
+                )}
               </>
             )}
             {checkTiming.end && (
-              <div>
-                Duration: {formatDuration(checkTiming.start, checkTiming.end)}
-              </div>
+              <>
+                <strong>
+                  Duration: </strong> {formatDuration(checkTiming.start, checkTiming.end)}
+              </>
             )}
             <br />
             {checking && checkResults.length > 0 && (
-              <span>
+              <>
                 <strong>Estimated remaining time to finish checking:</strong> {estimateTimeRemaining({ checkTiming, checking, checkResults, data })}
-              </span>
+              </>
             )}
           </div>
         </>
