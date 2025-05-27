@@ -14,6 +14,7 @@ export async function downloadWorkingPDFlinks({
   setDownloadingZip,
   setZipDownloaded,
   setDownloadProgress,
+  setCurrentDownloading
 }) {
   if (!checkResults.length) {
     setError("No check results available. Please check URLs first.");
@@ -43,6 +44,7 @@ export async function downloadWorkingPDFlinks({
   if (workingLinks.length === 0) {
     setError("No new working links found to download.");
     setDownloadingZip(false);
+    setDownloadProgress({ completed: 0, total: 0, start: null });
     return;
   }
 
@@ -55,6 +57,8 @@ export async function downloadWorkingPDFlinks({
 
   await asyncPool(8, workingLinks, async ({ url, id }) => {
     try {
+      if (setCurrentDownloading) setCurrentDownloading(url);
+
       console.log(`Downloading file: id-${id} url: ${url}`);
       const response = await fetch(`http://localhost:4000/download-pdf?url=${encodeURIComponent(url)}`);
       if (!response.ok) {
@@ -74,6 +78,8 @@ export async function downloadWorkingPDFlinks({
     }
     setDownloadProgress(prev => ({ ...prev, completed: prev.completed + 1 }));
   });
+
+  if (setCurrentDownloading) setCurrentDownloading("");
 
   const workbook = new ExcelJS.Workbook();
   const worksheet = workbook.addWorksheet("Status Sheet");
@@ -107,6 +113,7 @@ export async function downloadWorkingPDFlinks({
   if (failedDownloads.length === workingLinks.length) {
     setError("Failed to download all working links. Please try again.");
     setDownloadingZip(false);
+    setDownloadProgress({ completed: total, total, start: startTime });
     return;
   } else if (failedDownloads.length > 0) {
     setError(

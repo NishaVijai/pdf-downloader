@@ -16,7 +16,6 @@ import { CheckStatusPanel } from "./CheckStatusPanel";
 import { DownloadPanel } from "./DownloadPanel";
 
 export function MainComponent() {
-  const [uploading, setUploading] = useState(false);
   const [data, setData] = useState([]);
   const [columns, setColumns] = useState([]);
   const [error, setError] = useState("");
@@ -24,31 +23,17 @@ export function MainComponent() {
   const [checkResults, setCheckResults] = useState([]);
   const [downloadingZip, setDownloadingZip] = useState(false);
   const [zipDownloaded, setZipDownloaded] = useState(false);
+  const [currentDownloading, setCurrentDownloading] = useState("");
   const [checkTiming, setCheckTiming] = useState({ start: null, end: null });
+
   const [downloadProgress, setDownloadProgress] = useState({ completed: 0, total: 0, start: null });
 
   const csvUploadRef = useRef();
 
   const [status, checkUrl] = isWorkingPdfUrl();
 
-  const handleStartUploading = () => {
-    setUploading(true);
-    setData([]);
-    setColumns([]);
-    setError("");
-    setChecking(false);
-    setCheckResults([]);
-    setDownloadingZip(false);
-    setZipDownloaded(false);
-    setCheckTiming({ start: null, end: null });
-    setDownloadProgress({ completed: 0, total: 0, start: null });
-
-    if (csvUploadRef.current) {
-      csvUploadRef.current.clear();
-    }
-  };
-
   const checkUrlLink = async () => {
+    setChecking(true);
     await urlChecker({
       data,
       columns,
@@ -61,6 +46,7 @@ export function MainComponent() {
       asyncPool,
       checkUrl,
     });
+    setChecking(false);
   };
 
   const handleDownloadExcel = async () => {
@@ -87,41 +73,40 @@ export function MainComponent() {
 
   return (
     <div className="csv-to-excel">
-      <button className="start-upload-btn" onClick={handleStartUploading}>
-        Start PDF Downloder
-      </button>
-      {uploading && (
+      <CsvUpload
+        ref={csvUploadRef}
+        onData={(rows, cols) => { setData(rows); setColumns(cols); }}
+        onError={setError}
+      />
+      {error && <div className="error-message">{error}</div>}
+      {data.length !== 0 && (
         <>
-          <CsvUpload
-            ref={csvUploadRef}
-            onData={(rows, cols) => { setData(rows); setColumns(cols); }}
-            onError={setError}
+          <CheckStatusPanel
+            data={data}
+            checking={checking}
+            checkResults={checkResults}
+            checkTiming={checkTiming}
+            setCheckTiming={setCheckTiming}
+            setChecking={setChecking}
+            onCheck={checkUrlLink}
+            formatDuration={formatDuration}
+            estimateTimeRemaining={estimateTimeRemaining}
           />
-          {error && <div className="error-message">{error}</div>}
-          {data.length !== 0 && (
-            <>
-              <CheckStatusPanel
-                data={data}
-                checking={checking}
-                checkResults={checkResults}
-                checkTiming={checkTiming}
-                onCheck={checkUrlLink}
-                formatDuration={formatDuration}
-                estimateTimeRemaining={estimateTimeRemaining}
-              />
-              <DownloadPanel
-                checkResults={checkResults}
-                downloadingZip={downloadingZip}
-                downloadProgress={downloadProgress}
-                zipDownloaded={zipDownloaded}
-                onDownloadZip={handleDownloadWorkingLinks}
-                onDownloadExcel={handleDownloadExcel}
-                data={data}
-                columns={columns}
-                detectUrlColumns={detectUrlColumns}
-              />
-            </>
-          )}
+          <DownloadPanel
+            checkResults={checkResults}
+            downloadingZip={downloadingZip}
+            downloadProgress={downloadProgress}
+            zipDownloaded={zipDownloaded}
+            currentDownloading={currentDownloading}
+            onDownloadZip={handleDownloadWorkingLinks}
+            onDownloadExcel={handleDownloadExcel}
+            data={data}
+            columns={columns}
+            detectUrlColumns={detectUrlColumns}
+            checkTiming={checkTiming}
+            checking={checking}
+            setError={setError}
+          />
         </>
       )}
     </div>

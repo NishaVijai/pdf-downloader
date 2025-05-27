@@ -21,36 +21,51 @@ export async function urlChecker({
   setCheckTiming({ start: new Date(), end: null });
 
   // const rowsToCheck = data;
-  const rowsToCheck = data.slice(0, 50);
+  const rowsToCheck = data.slice(150, 200);
+  // const rowsToCheck = data.slice(150, 250);
 
   const tasks = rowsToCheck.map((row, i) => async () => {
     let foundWorking = false;
-    let checkedUrl = null;
+    let foundUrl = null;
+    let foundNonWorkingUrl = null;
+
     for (const col of urlCols) {
       const url = row[col];
       if (typeof url === "string" && url.startsWith("http")) {
-        checkedUrl = url;
+        foundUrl = url;
         try {
           const ok = await checkUrlWithTimeout(checkUrl, url, 10000);
-          setCheckResults(prev => [...prev, { url, working: ok }]);
-
-          console.log(
-            `Row ${i + 1}, Column "${col}": Checked URL: ${url} - ${ok ? "WORKING" : "NOT WORKING"}`
-          );
           if (ok) {
+            setCheckResults(prev => [...prev, { url, working: true }]);
+            console.log(
+              `Row ${i + 1}, Column "${col}": Checked URL: ${url} - WORKING`
+            );
             foundWorking = true;
             break;
+          } else {
+            if (!foundNonWorkingUrl) foundNonWorkingUrl = url;
+            console.log(
+              `Row ${i + 1}, Column "${col}": Checked URL: ${url} - NOT WORKING`
+            );
           }
         } catch {
-          setCheckResults(prev => [...prev, { url, working: false }]);
+          if (!foundNonWorkingUrl) foundNonWorkingUrl = url;
           console.log(
             `Row ${i + 1}, Column "${col}": Checked URL: ${url} - NOT WORKING`
           );
         }
       }
     }
-    if (!checkedUrl) {
-      setCheckResults(prev => [...prev, { url: null, working: false }]);
+
+    if (i % 10 === 0) {
+      await new Promise(resolve => setTimeout(resolve, 0));
+    }
+
+    if (!foundWorking) {
+      setCheckResults(prev => [
+        ...prev,
+        { url: foundNonWorkingUrl || null, working: false }
+      ]);
     }
   });
 

@@ -38,9 +38,9 @@ export function CheckStatusPanel({
           <div className="check-status-panel-process-message">
             <strong>Total rows:</strong> {data.length}
             <br />
-            <strong>URL link's being checked:</strong> {checking ? Math.min(checkResults.length, data.length) : checkResults.length}
+            <strong>Current row is being checked:</strong> {checking ? Math.min(checkResults.length, data.length) : checkResults.length}
             <br />
-            <strong>Link's left to check:</strong> {checking ? Math.max(data.length - checkResults.length, 0) : 0}
+            <strong>Rows left to check:</strong> {checking ? Math.max(data.length - checkResults.length, 0) : 0}
             <br />
             {checkTiming.start && (
               <>
