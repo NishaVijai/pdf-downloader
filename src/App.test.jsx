@@ -9,10 +9,10 @@ vi.mock('./components/Header', () => ({
 vi.mock('./components/Footer', () => ({
   Footer: () => <footer>Footer</footer>,
 }));
-vi.mock('./components/CsvToExcel', () => ({
-  CsvToExcel: (props) => (
+vi.mock('./components/MainComponent', () => ({
+  MainComponent: (props) => (
     <div>
-      CsvToExcel
+      MainComponent
       <span data-testid="columns-prop">{JSON.stringify(props.columns)}</span>
     </div>
   ),
@@ -29,9 +29,9 @@ describe('App Component', () => {
     expect(screen.getByText(/footer/i)).toBeInTheDocument();
   });
 
-  it('should render CsvToExcel component with columns prop', () => {
+  it('should render MainComponent component with columns prop', () => {
     render(<App />);
-    expect(screen.getByText(/CsvToExcel/i)).toBeInTheDocument();
+    expect(screen.getByText(/MainComponent/i)).toBeInTheDocument();
 
     const columnsProp = screen.getByTestId('columns-prop').textContent;
     expect(columnsProp).not.toBeUndefined();

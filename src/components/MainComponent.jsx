@@ -15,7 +15,7 @@ import { CsvUpload } from "./CsvUpload";
 import { CheckStatusPanel } from "./CheckStatusPanel";
 import { DownloadPanel } from "./DownloadPanel";
 
-export function CsvToExcel() {
+export function MainComponent() {
   const [uploading, setUploading] = useState(false);
   const [data, setData] = useState([]);
   const [columns, setColumns] = useState([]);
