@@ -1,6 +1,7 @@
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import { asyncPool } from "./csvUtils";
+import ExcelJS from "exceljs";
 
 const downloadedFilesSet = new Set();
 
@@ -54,6 +55,7 @@ export async function downloadWorkingPDFlinks({
 
   await asyncPool(8, workingLinks, async ({ url, id }) => {
     try {
+      console.log(`Downloading file: id-${id} url: ${url}`);
       const response = await fetch(`http://localhost:4000/download-pdf?url=${encodeURIComponent(url)}`);
       if (!response.ok) {
         failedDownloads.push({ url, id });
@@ -72,6 +74,35 @@ export async function downloadWorkingPDFlinks({
     }
     setDownloadProgress(prev => ({ ...prev, completed: prev.completed + 1 }));
   });
+
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet("Status Sheet");
+  worksheet.addRow(["id", "Status"]);
+
+  let statusMap = {};
+  if (checkResults && checkResults.length > 0) {
+    checkResults.forEach(r => {
+      statusMap[r.url] = r.working ? "Working" : "Not working";
+    });
+  }
+
+  data.forEach(row => {
+    const id = row["id"];
+    let status = "Not working";
+    for (const col of urlCols) {
+      const url = row[col];
+      if (typeof url === "string" && url.startsWith("http")) {
+        if (statusMap[url] === "Working") {
+          status = "Working";
+          break;
+        }
+      }
+    }
+    worksheet.addRow([id, status]);
+  });
+
+  const excelBuffer = await workbook.xlsx.writeBuffer();
+  zip.file("status_sheet.xlsx", excelBuffer);
 
   if (failedDownloads.length === workingLinks.length) {
     setError("Failed to download all working links. Please try again.");

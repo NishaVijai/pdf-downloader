@@ -3,10 +3,9 @@ import { saveAs } from "file-saver";
 
 export async function exportToExcel({ data, columns, checkResults, detectUrlColumns }) {
   const workbook = new ExcelJS.Workbook();
-  const worksheet = workbook.addWorksheet("CSV Converted To Excel Sheet");
+  const worksheet = workbook.addWorksheet("Status Sheet");
 
-  const outputColumns = [...columns, "Working/Downloaded URL", "Not working/not downloaded URL"];
-  worksheet.addRow(outputColumns);
+  worksheet.addRow(["id", "Working/Downloaded URL", "Not working/not downloaded URL"]);
 
   let statusMap = {};
   if (checkResults && checkResults.length > 0) {
@@ -18,7 +17,7 @@ export async function exportToExcel({ data, columns, checkResults, detectUrlColu
   const urlCols = detectUrlColumns(data, columns);
 
   data.forEach(row => {
-    const rowData = columns.map(col => row[col]);
+    const id = row["id"];
     let workingUrl = "";
     let notWorkingUrl = "";
 
@@ -30,15 +29,13 @@ export async function exportToExcel({ data, columns, checkResults, detectUrlColu
         } else if (statusMap[url] === "Not working/not downloaded" && !notWorkingUrl) {
           notWorkingUrl = url;
         }
-
         if (workingUrl && notWorkingUrl) break;
       }
     }
 
-    rowData.push(workingUrl, notWorkingUrl);
-    worksheet.addRow(rowData);
+    worksheet.addRow([id, workingUrl, notWorkingUrl]);
   });
 
   const buffer = await workbook.xlsx.writeBuffer();
-  saveAs(new Blob([buffer]), "converted_to_excel_sheet.xlsx");
+  saveAs(new Blob([buffer]), "status_sheet.xlsx");
 }

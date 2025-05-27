@@ -7,7 +7,6 @@ export function DownloadPanel({
   downloadProgress,
   zipDownloaded,
   onDownloadZip,
-  onDownloadExcel,
   estimateDownloadTime,
   estimateZipTimeRemaining,
   data,
@@ -40,7 +39,7 @@ export function DownloadPanel({
     window.alert("Download reset! You can now download all working links again.");
   };
 
-  const handleDownloadZipAndExcel = async () => {
+  const handleDownloadZip = async () => {
     if (onDownloadZip) await onDownloadZip();
     setShowExcelButton(true);
   };
@@ -51,7 +50,7 @@ export function DownloadPanel({
     <>
       {checkResults.length > 0 && (
         <div className="download-panel">
-          <button onClick={handleDownloadZipAndExcel} disabled={downloadingZip}>
+          <button onClick={handleDownloadZip} disabled={downloadingZip}>
             Download PDF files (ZIP)
             {showSpans && (
               <>
@@ -67,11 +66,6 @@ export function DownloadPanel({
           <button onClick={handleResetDownload} disabled={downloadingZip}>
             Reset Download
           </button>
-          {showExcelButton && (
-            <button onClick={onDownloadExcel} disabled={downloadingZip}>
-              Download a Excel File with PDF link status
-            </button>
-          )}
         </div>
       )}
       {downloadingZip && (
