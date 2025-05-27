@@ -80,12 +80,13 @@ input {
   border: 1px solid #ccc;
   border-radius: 5px;
   font-size: 0.9rem;
-  padding: 1rem;
+  padding: 0.5rem;
   width: 100%;
   max-width: 350px;
 }
 
-button {
+button,
+input::file-selector-button {
   background-color: #007bff;
   color: #fff;
   border: 2px solid transparent;
@@ -97,7 +98,9 @@ button {
 }
 
 button:focus,
-button:hover {
+button:hover,
+input::file-selector-button:focus,
+input::file-selector-button:hover {
   background-color: #3a7cc6;
   border: 2px solid #fff;
 }

@@ -28,39 +28,39 @@ export function estimateTimeRemaining({ checkTiming, checking, checkResults, dat
   return `${minutes > 0 ? `${minutes} min ` : ""}${seconds} sec`;
 }
 
-export function estimateDownloadTime({ data, columns, checkResults, detectUrlColumns }) {
-  const urlCols = detectUrlColumns(data, columns);
-  let count = 0;
-  data.forEach(row => {
-    for (const col of urlCols) {
-      const url = row[col];
-      if (
-        typeof url === "string" &&
-        url.startsWith("http") &&
-        checkResults.find(r => r.url === url && r.working)
-      ) {
-        count++;
-        break;
-      }
-    }
-  });
+// export function estimateDownloadTime({ data, columns, checkResults, detectUrlColumns }) {
+//   const urlCols = detectUrlColumns(data, columns);
+//   let count = 0;
+//   data.forEach(row => {
+//     for (const col of urlCols) {
+//       const url = row[col];
+//       if (
+//         typeof url === "string" &&
+//         url.startsWith("http") &&
+//         checkResults.find(r => r.url === url && r.working)
+//       ) {
+//         count++;
+//         break;
+//       }
+//     }
+//   });
 
-  const totalSeconds = count * 2;
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = (totalSeconds % 60).toFixed(0);
-  return `${minutes > 0 ? `${minutes} min ` : ""}${seconds} sec`;
-}
+//   const totalSeconds = count * 2;
+//   const minutes = Math.floor(totalSeconds / 60);
+//   const seconds = (totalSeconds % 60).toFixed(0);
+//   return `${minutes > 0 ? `${minutes} min ` : ""}${seconds} sec`;
+// }
 
-export function estimateZipTimeRemaining(progress) {
-  if (!progress.start || progress.completed === 0) return "";
-  const elapsedMs = Date.now() - progress.start;
-  const avgMsPerFile = elapsedMs / progress.completed;
-  const filesLeft = progress.total - progress.completed;
-  const estMsLeft = avgMsPerFile * filesLeft;
-  const minutes = Math.floor(estMsLeft / 60000);
-  const seconds = ((estMsLeft % 60000) / 1000).toFixed(0);
-  return `${minutes > 0 ? `${minutes} min ` : ""}${seconds} sec`;
-}
+// export function estimateZipTimeRemaining(progress) {
+//   if (!progress.start || progress.completed === 0) return "";
+//   const elapsedMs = Date.now() - progress.start;
+//   const avgMsPerFile = elapsedMs / progress.completed;
+//   const filesLeft = progress.total - progress.completed;
+//   const estMsLeft = avgMsPerFile * filesLeft;
+//   const minutes = Math.floor(estMsLeft / 60000);
+//   const seconds = ((estMsLeft % 60000) / 1000).toFixed(0);
+//   return `${minutes > 0 ? `${minutes} min ` : ""}${seconds} sec`;
+// }
 
 export function checkUrlWithTimeout(checkUrl, url, ms = 10000) {
   return Promise.race([

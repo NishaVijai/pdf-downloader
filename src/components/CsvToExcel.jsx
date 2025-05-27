@@ -4,8 +4,6 @@ import {
   detectUrlColumns,
   formatDuration,
   estimateTimeRemaining,
-  estimateDownloadTime,
-  estimateZipTimeRemaining,
   checkUrlWithTimeout,
   asyncPool
 } from "../utils/csvUtils";
@@ -90,7 +88,7 @@ export function CsvToExcel() {
   return (
     <div className="csv-to-excel">
       <button className="start-upload-btn" onClick={handleStartUploading}>
-        Start Uploading File
+        Start PDF Downloder
       </button>
       {uploading && (
         <>
@@ -118,8 +116,6 @@ export function CsvToExcel() {
                 zipDownloaded={zipDownloaded}
                 onDownloadZip={handleDownloadWorkingLinks}
                 onDownloadExcel={handleDownloadExcel}
-                estimateDownloadTime={estimateDownloadTime}
-                estimateZipTimeRemaining={estimateZipTimeRemaining}
                 data={data}
                 columns={columns}
                 detectUrlColumns={detectUrlColumns}

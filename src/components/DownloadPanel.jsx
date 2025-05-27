@@ -7,13 +7,10 @@ export function DownloadPanel({
   downloadProgress,
   zipDownloaded,
   onDownloadZip,
-  estimateDownloadTime,
-  estimateZipTimeRemaining,
   data,
   columns,
   detectUrlColumns
 }) {
-  const [showExcelButton, setShowExcelButton] = useState(false);
   const [resetCount, setResetCount] = useState(0);
 
   const urlCols = detectUrlColumns(data, columns);
@@ -34,17 +31,16 @@ export function DownloadPanel({
 
   const handleResetDownload = () => {
     resetDownloadedFilesSet();
-    setShowExcelButton(false);
     setResetCount(c => c + 1);
     window.alert("Download reset! You can now download all working links again.");
   };
 
   const handleDownloadZip = async () => {
     if (onDownloadZip) await onDownloadZip();
-    setShowExcelButton(true);
+    setResetCount(0);
   };
 
-  const showSpans = resetCount === 0 || showExcelButton;
+  const showSpans = resetCount === 0;
 
   return (
     <>
@@ -56,9 +52,6 @@ export function DownloadPanel({
               <>
                 <span className="span-message">
                   ({count} link{count === 1 ? "" : "s"} available)
-                </span>
-                <span className="span-message">
-                  (Est. download time: {estimateDownloadTime({ data, columns, checkResults, detectUrlColumns })})
                 </span>
               </>
             )}
@@ -72,12 +65,15 @@ export function DownloadPanel({
         <div className="loading-message">
           <p>Preparing ZIP file, please wait...</p>
           <p>Downloaded: {downloadProgress.completed} / {downloadProgress.total}</p>
-          <p>Estimated time left: {estimateZipTimeRemaining(downloadProgress)}</p>
         </div>
       )}
+
       <div className="zip-download-status">
-        {zipDownloaded && !downloadingZip && (
+        {zipDownloaded && !downloadingZip && resetCount === 0 && (
           <p className="success-message">ZIP download completed!</p>
+        )}
+        {resetCount > 0 && (
+          <p className="success-message">Reset button pressed</p>
         )}
       </div>
     </>
