@@ -7,7 +7,6 @@ import {
   checkUrlWithTimeout,
   asyncPool
 } from "../utils/csvUtils";
-import { exportToExcel } from "../utils/exportToExcel";
 import { downloadWorkingPDFlinks } from "../utils/downloadWorkingPDFlinks";
 import { urlChecker } from "../utils/urlChecker";
 
@@ -49,15 +48,6 @@ export function MainComponent() {
     setChecking(false);
   };
 
-  const handleDownloadExcel = async () => {
-    await exportToExcel({
-      data,
-      columns,
-      checkResults,
-      detectUrlColumns
-    });
-  };
-
   const handleDownloadWorkingLinks = async () => {
     await downloadWorkingPDFlinks({
       data,
@@ -78,7 +68,6 @@ export function MainComponent() {
         onData={(rows, cols) => { setData(rows); setColumns(cols); }}
         onError={setError}
       />
-      {error && <div className="error-message">{error}</div>}
       {data.length !== 0 && (
         <>
           <CheckStatusPanel
@@ -99,7 +88,6 @@ export function MainComponent() {
             zipDownloaded={zipDownloaded}
             currentDownloading={currentDownloading}
             onDownloadZip={handleDownloadWorkingLinks}
-            onDownloadExcel={handleDownloadExcel}
             data={data}
             columns={columns}
             detectUrlColumns={detectUrlColumns}
@@ -107,6 +95,7 @@ export function MainComponent() {
             checking={checking}
             setError={setError}
           />
+          {error && <div className="error-message">{error}</div>}
         </>
       )}
     </div>
